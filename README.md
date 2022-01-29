@@ -4,7 +4,7 @@ Recent advances in single-cell RNA-sequencing (scRNA-seq) enable the characteriz
 
 ## CCI evaluation workflow
 
-#worflow figure
+![image](https://github.com/laputaliu/CCI_evaluation/blob/main/fig/workflow.png)
 
 First, generate known ligand-receptor pairs from CellChatDB, then select short-range and long-range interactions from known pairs for each dataset (top left). Next, perform spatial cell type annotation on ST data coupled with matched scRNA-seq data, and define near and far distributed cell type pairs based on the annotation (medium left). Then feed annotated scRNA-seq data to CCI tools and extract predicted results (bottom left). Finally, evaluate tools’ performances on both distance enrichment score and the metric of commonly identified interactions.
 
