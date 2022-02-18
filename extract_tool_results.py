@@ -664,12 +664,11 @@ def extract_ip_connectome(res_path, ct_list, ct_name_correct = None, cc_ip_path 
     name_trans_path_cpdb = '/fs/home/liuzhaoyang/project/cci_evaluation/human_SCC/tools_TN_Epithelial/cc/output/interaction_name_trans.tsv'
     dec_path_cpdb = '/fs/home/liuzhaoyang/project/cci_evaluation/human_SCC/tools_TN_Epithelial/cpdb/output/deconvoluted.txt'
 
-    # res_path_italk = '/Volumes/Backup/data/spatial_compare_data/human_SCC/tools/iTALK/output/LR_result.tsv'
+    res_path_italk = '/Volumes/Backup/data/spatial_compare_data/human_SCC/tools/iTALK/output/LR_result.tsv'
 
     res_path_scr = '/fs/home/liuzhaoyang/project/cci_evaluation/human_SCC/tools_TN_Epithelial/SCR/output'
 
-    # for cytotalk
-    # res_dir_cytotalk = '/Users/laputaliu/Data/spatial_compare/CytoTalk/output_cellchatdb'
+    res_dir_cytotalk = '/Users/laputaliu/Data/spatial_compare/CytoTalk/output_cellchatdb'
 
     res_path_natmi = '/fs/home/liuzhaoyang/project/cci_evaluation/human_SCC/tools_TN_Epithelial/NATMI/output/Edges_LRdb_cellchat.csv'
 
@@ -691,14 +690,14 @@ def extract_ip_connectome(res_path, ct_list, ct_name_correct = None, cc_ip_path 
     res_cpdb = extract_ip_cpdb(pval_path_cpdb, ct_list, name_trans_path_cpdb, dec_path_cpdb)
     print('cpdb done')
 
-    # res_italk = extract_ip_italk(res_path_italk,ct_list)
-    # print('italk done')
+    res_italk = extract_ip_italk(res_path_italk,ct_list)
+    print('italk done')
 
     res_scr = extract_ip_scr(res_path_scr,ct_list)
     print('scr done')
 
-    # res_cytotalk = extract_ip_cytotalk(res_dir_cytotalk,ct_list)
-    # print('cytotalk done')
+    res_cytotalk = extract_ip_cytotalk(res_dir_cytotalk,ct_list)
+    print('cytotalk done')
 
     res_natmi = extract_ip_natmi(res_path_natmi, ct_list)
     print('natmi done')
@@ -718,9 +717,9 @@ def extract_ip_connectome(res_path, ct_list, ct_name_correct = None, cc_ip_path 
     tool_res_dic.update({
         'cc':res_cc,
         'cpdb':res_cpdb,
-    #     'italk':res_italk,
+        'italk':res_italk,
         'scr':res_scr,
-    #     'cytotalk':res_cytotalk,
+        'cytotalk':res_cytotalk,
         'natmi':res_natmi,
         'icellnet':res_icellnet,
         'nichenet':res_nichenet,
