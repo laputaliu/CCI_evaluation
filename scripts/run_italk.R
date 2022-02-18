@@ -32,7 +32,8 @@ if (!file.exists(output_path)){
 
 run_italk <- function(count_path, meta_path, db_path, ntop, output_path){
   
-  print(paste0('>>> load library and data <<< [', Sys.time(),']'))
+  print('############ ------------- italk --------------- ############')
+  print(paste0('>>> loading data <<< [', Sys.time(),']'))
   load(db_path)
   comm_list<-c('growth factor','other','cytokine','checkpoint')
   res<-NULL
@@ -47,7 +48,6 @@ run_italk <- function(count_path, meta_path, db_path, ntop, output_path){
   setwd(output_path)
   
   print(paste0('>>> start italk workflow <<< [', Sys.time(),']'))
-
   highly_exprs_genes<-rawParse(data,top_genes=ntop,stats='mean')
   res<-FindLR(highly_exprs_genes,datatype='mean count',comm_type="other", database = database_cellchat)
 
@@ -56,7 +56,6 @@ run_italk <- function(count_path, meta_path, db_path, ntop, output_path){
   saveRDS(res, file = 'FindLR_P2_rep2_st_cellchatdb_res.rds')
   write.table(res,file='LR_result.tsv',sep='\t',quote = F,row.names = F)
   saveRDS(highly_exprs_genes,'highly_exprs_genes.rds')
-  
   print(paste0('>>> all done <<< [', Sys.time(),']'))
 }
 
