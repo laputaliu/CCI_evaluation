@@ -1,6 +1,3 @@
-# with open('/fs/home/liuzhaoyang/project/cci_evaluation/human_SCC/tools/CytoTalk/script/ct_kept_list.txt','w') as f:
-#     f.write('\n'.join(reoutput_list))
-
 
 import sys
 import os
@@ -30,10 +27,10 @@ if __name__ == '__main__':
 
     with open(ct_kept_path,'r') as f:
         reoutput_list = [line.strip() for line in f.readlines()]
+        
+#     with open('/fs/home/liuzhaoyang/project/cci_evaluation/human_SCC/tools/CytoTalk/script/ct_kept_list.txt','w') as f:
 #         f.write('\n'.join(reoutput_list))
-
-#     output_dir = '/fs/home/liuzhaoyang/project/cci_evaluation/human_SCC/tools/CytoTalk/output/'
-#     avoutput_path = '/fs/home/liuzhaoyang/project/cci_evaluation/human_SCC/tools/CytoTalk/output_available'
+       
     if not os.path.exists(avoutput_path):
         os.mkdir(avoutput_path)
     for re_dir in reoutput_list:
