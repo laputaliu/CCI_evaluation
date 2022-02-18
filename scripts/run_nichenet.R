@@ -32,29 +32,20 @@ run_nichenet <- function(count_path, meta_path, output_path){
   print('############ ------------- nichenet --------------- ############')
   
   print(paste0('>>> loading library and data <<< [', Sys.time(),']'))
-  
-  ###### server ######
   count_df = read.table(count_path,sep='\t')
   meta_df = read.table(meta_path,sep='\t', row.names = 1)
-
   ligand_target_matrix = readRDS('/fs/home/liuzhaoyang/project/cci_evaluation/CCI_tools/NicheNet/PAAD/input/ligand_target_matrix.rds')
   lr_network = readRDS('/fs/home/liuzhaoyang/project/cci_evaluation/CCI_tools/NicheNet/PAAD/input/lr_network.rds')
   weighted_networks = readRDS('/fs/home/liuzhaoyang/project/CCI_tools/cci_evaluation/NicheNet/PAAD/input/weighted_networks.rds')
   weighted_networks_lr = weighted_networks$lr_sig %>% inner_join(lr_network %>% distinct(from,to), by = c("from","to"))
   
   print(paste0('>>> generate seurat object <<< [', Sys.time(),']'))
-  
-  ## try to generate Seurat object
   seuratObj <- CreateSeuratObject(counts = count_df)
   seuratObj@meta.data$celltype = meta_df$V2
   Idents(object = seuratObj) = meta_df$V2
-  
   ct_list = levels(factor(meta_df$V2))
 
   print(paste0('>>> start Nichenet workflow for each cell types <<< [', Sys.time(),']'))
-  
-  
-  ###### using for roop to go over each ct one by one ########
   for (ct_a in ct_list){
     for (ct_b in ct_list){
       if (ct_a == ct_b){
@@ -91,24 +82,15 @@ run_nichenet <- function(count_path, meta_path, output_path){
       
       potential_ligands = lr_network %>% filter(from %in% expressed_ligands & to %in% expressed_receptors) %>% pull(from) %>% unique()
       
-      
       ### NicheNet ligand activity analysis
       ## rank the potential ligands based on the presence of their target genes in the gene set of interest
       ligand_activities = predict_ligand_activities(expressed_genes_sender, background_expressed_genes = background_expressed_genes, ligand_target_matrix = ligand_target_matrix, potential_ligands = potential_ligands)
       ligand_activities = ligand_activities %>% arrange(-pearson) %>% mutate(rank = rank(desc(pearson)))
       
-      #### get top 20 activity ligands
+      #### get top 50 activity ligands
       best_upstream_ligands = ligand_activities %>% top_n(50, pearson) %>% arrange(-pearson) %>% pull(test_ligand) %>% unique()
-      
-      ## plot senders and top ligands expression situation
-      # pdf(file = '/fs/home/liuzhaoyang/project/cci_evaluation/NicheNet/PAAD/sender&top_ligand_dotplot.pdf')
-      # pdf(file = paste0(OutputPath,'/sender&top_ligand_dotplot.pdf'))
-      # DotPlot(seuratObj, features = best_upstream_ligands %>% rev(), cols = "RdYlBu") + RotatedAxis()
-      # dev.off()
-      
-      
-      ##### Infer receptors and top-predicted target genes of top-ranked ligands
-      
+            
+      ##### Infer receptors and top-predicted target genes of top-ranked ligands     
       ### target gene
       active_ligand_target_links_df = best_upstream_ligands %>% lapply(get_weighted_ligand_target_links,geneset = expressed_genes_sender, ligand_target_matrix = ligand_target_matrix, n = 200) %>% bind_rows() %>% drop_na()
       
@@ -120,13 +102,7 @@ run_nichenet <- function(count_path, meta_path, output_path){
       colnames(active_ligand_target_links) = colnames(active_ligand_target_links) %>% make.names() # make.names() for heatmap visualization of genes like H2-T23
       
       vis_ligand_target = active_ligand_target_links[order_targets,order_ligands] %>% t()
-      
-      # pdf(file='/fs/home/liuzhaoyang/project/cci_evaluation/NicheNet/PAAD/toprank_ligand&target_heatmap.pdf')
-      # pdf(file=paste0(OutputPath, '/toprank_ligand&target_heatmap.pdf'))
-      # p_ligand_target_network = vis_ligand_target %>% make_heatmap_ggplot("Prioritized ligands","Predicted target genes", color = "purple",legend_position = "top", x_axis_position = "top",legend_title = "Regulatory potential")  + theme(axis.text.x = element_text(face = "italic")) + scale_fill_gradient2(low = "whitesmoke",  high = "purple", breaks = c(0,0.0045,0.0090))
-      # p_ligand_target_network
-      # dev.off()
-      
+            
       ### receptor gene
       lr_network_top = lr_network %>% filter(from %in% best_upstream_ligands & to %in% expressed_receptors) %>% distinct(from,to)
       best_upstream_receptors = lr_network_top %>% pull(to) %>% unique()
@@ -150,19 +126,11 @@ run_nichenet <- function(count_path, meta_path, output_path){
       vis_ligand_receptor_network = lr_network_top_matrix[order_receptors, order_ligands_receptor]
       rownames(vis_ligand_receptor_network) = order_receptors %>% make.names()
       colnames(vis_ligand_receptor_network) = order_ligands_receptor %>% make.names()
-      
-      # pdf(file='/fs/home/liuzhaoyang/project/cci_evaluation/NicheNet/PAAD/toprank_ligand&receptor_heatmap.pdf')
-      # pdf(file=paste0(OutputPath, '/toprank_ligand&receptor_heatmap.pdf'))
-      # p_ligand_receptor_network = vis_ligand_receptor_network %>% t() %>% make_heatmap_ggplot("Ligands","Receptors", color = "mediumvioletred", x_axis_position = "top",legend_title = "Prior interaction potential")
-      # p_ligand_receptor_network
-      # dev.off()
-      
+            
       print(paste0('>>> ', ct_a, '_', ct_b, ' write <<< [', Sys.time(), ']'))
-      # write.table(vis_ligand_receptor_network, file='/fs/home/liuzhaoyang/project/cci_evaluation/NicheNet/PAAD/LR_potential.tsv',quote=F, sep='\t')
       write.table(vis_ligand_receptor_network, file=paste0(OutputPath, '/LR_potential.tsv'),quote=F, sep='\t')
       
       print(paste0('>>> ', ct_a, '_', ct_b, ' finish <<< [', Sys.time(), ']'))
-      
       
       ###### more strict ligand-receptor result
       ##### considering only bona fide ligand-receptor interactions documented in literature and publicly available databases
@@ -192,13 +160,7 @@ run_nichenet <- function(count_path, meta_path, output_path){
       rownames(vis_ligand_receptor_network_strict) = order_receptors %>% make.names()
       colnames(vis_ligand_receptor_network_strict) = order_ligands_receptor %>% make.names()
 
-      # pdf(file='/fs/home/liuzhaoyang/project/cci_evaluation/NicheNet/PAAD/toprank_ligand&receptor_strict_heatmap.pdf')
-      # pdf(file=paste0(OutputPath, '/toprank_ligand&receptor_strict_heatmap.pdf'))
-      # p_ligand_receptor_network_strict = vis_ligand_receptor_network_strict %>% t() %>% make_heatmap_ggplot("Ligands","Receptors", color = "mediumvioletred", x_axis_position = "top",legend_title = "Prior interaction potential\n(bona fide)")
-      # p_ligand_receptor_network_strict
-      # dev.off()
       print(paste0('>>> ', ct_a, '_', ct_b, ' strict write <<< [', Sys.time(), ']'))
-      # write.table(vis_ligand_receptor_network, file='/fs/home/liuzhaoyang/project/cci_evaluation/NicheNet/PAAD/LR_potential_strict.tsv',quote=F, sep='\t')
       write.table(vis_ligand_receptor_network, file=paste0(OutputPath, '/LR_potential_strict.tsv'),quote=F, sep='\t')
       print(paste0('>>> ', ct_a, '_', ct_b, ' strict finish <<< [', Sys.time(), ']'))
       
@@ -209,16 +171,4 @@ run_nichenet <- function(count_path, meta_path, output_path){
 
 
 run_nichenet(count_path, meta_path, output_path)
-
-
-
-
-
-
-
-
-
-
-
-
 
