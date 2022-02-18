@@ -1,7 +1,6 @@
 library(optparse)
 library(SingleCellSignalR)
 
-
 options(stringsAsFactors = FALSE)
 
 option_list <- list(  
@@ -27,7 +26,6 @@ if (!file.exists(output_path)){
 }
 
 
-
 run_scr <- function(count_path, meta_path, output_path,s.score=0.6){
   
   print('############ ------------- scr --------------- ############')
@@ -50,10 +48,9 @@ run_scr <- function(count_path, meta_path, output_path,s.score=0.6){
   }
   cluster = as.numeric(cluster)
   
-  
-  print(paste0('>>> generate LR db <<< [', Sys.time(),']'))
-  
-  ###### generate cellchatdb #####
+  # ###--- codes below are for generating scr's LRdb from cellchatdb, which only need to be run once. ---###
+  # print(paste0('>>> generate LR db <<< [', Sys.time(),']'))
+  # ##### generate cellchatdb #####
   # ligand = unlist(read.table('/fs/home/liuzhaoyang/project/cci_evaluation/SCR/database_cellchat/lignad_cellchat.tsv'))
   # receptor = unlist(read.table('/fs/home/liuzhaoyang/project/cci_evaluation/SCR/database_cellchat/receptor_cellchat.tsv'))
   # names(ligand) = NULL
@@ -76,12 +73,7 @@ run_scr <- function(count_path, meta_path, output_path,s.score=0.6){
   
   load('/fs/home/liuzhaoyang/project/cci_evaluation/CCI_tools/SCR/database_cellchat/LRdb.rda')
   
-  ###### start #####
-  
   print(paste0('>>> start SCR workflow <<< [', Sys.time(),']'))
-  
-  ## since it does not allow the cluster name include special characters, so we do the gsub right here.
-  
   celltype_list = gsub(' ', '_', celltype_list)
   celltype_list = gsub('/', '_', celltype_list)
   
@@ -89,11 +81,9 @@ run_scr <- function(count_path, meta_path, output_path,s.score=0.6){
   clust.ana <- cluster_analysis(data = data, genes = genes, cluster = cluster, c.names = celltype_list, write=FALSE)
   
   signal <- cell_signaling(data = data, genes = genes, cluster = cluster, species = "homo sapiens", c.names = celltype_list,int.type = c("autocrine"), s.score = s.score, write=FALSE)
-  # s.score阈值默认 > 0.5
+  # default s.score cutoff -> 0.5
   
   print(paste0('>>> write result <<< [', Sys.time(),']'))
-  
-  
   for (n in seq(1,length(signal))){
     ct_type = paste0(colnames(signal[[n]])[1],'_', colnames(signal[[n]])[2])
     ip_df = signal[[n]]
