@@ -191,14 +191,7 @@ def processing(idx_path,
     res_df['pathway'] = res_df.apply(lambda x : cc_ip_dic[x[0]]['pathway'], axis=1)
     res_df['ip_type'] = res_df.apply(lambda x : cc_ip_dic[x[0]]['ip_type'], axis=1)
     
-    res_df_long = res_df.loc[res_df.p_val <= 0.1,:].loc[res_df.d_rat > 1]
-    res_df_long = res_df_long.sort_values(by='p_val')
-    res_df_short = res_df.loc[res_df.p_val <= 0.1,:].loc[res_df.d_rat < 1]
-    res_df_short = res_df_short.sort_values(by='p_val')
-   
     res_df.to_csv('{}/ip_distance_all.tsv'.format(output_path),sep = '\t', index = None)
-    res_df_long.to_csv('{}/ip_distance_long.tsv'.format(output_path),sep = '\t', index = None)
-    res_df_short.to_csv('{}/ip_distance_short.tsv'.format(output_path),sep = '\t', index = None)
     
     print('{} done'.format(idx_path.split('/')[-1]))
     
