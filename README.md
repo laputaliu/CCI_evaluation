@@ -9,16 +9,21 @@ Recent advances in single-cell RNA-sequencing (scRNA-seq) enable the characteriz
 First, generate known ligand-receptor pairs from CellChatDB, then select short-range and long-range interactions from known pairs for each dataset (top left). Next, perform spatial cell type annotation on ST data coupled with matched scRNA-seq data, and define near and far distributed cell type pairs based on the annotation (medium left). Then feed annotated scRNA-seq data to CCI tools and extract predicted results (bottom left). Finally, evaluate tools’ performances on both distance enrichment score and the metric of commonly identified interactions.
 
 ## CCI tools included in this study
+- [CellCall](https://github.com/ShellyCoder/cellcall) v0.0.0.9000
 - [CellChat](https://github.com/sqjin/CellChat) v1.0.0
-- [CellPhoneDB](https://github.com/Teichlab/cellphonedb) v2.0
+- [CellPhoneDB](https://github.com/Teichlab/cellphonedb) v2
+- [CellPhoneDB v3](https://github.com/ventolab/CellphoneDB) v3
 - [Connectome](https://github.com/msraredon/Connectome) v1.0.1
-- [CytoTalk](https://github.com/huBioinfo/CytoTalk) v3.1.0
+- [CytoTalk](https://github.com/tanlabcode/CytoTalk) v4.0.11
+- [Domino](https://github.com/Chris-Cherry/domino) v0.1.1
+- [Giotto](https://github.com/RubD/Giotto) v1.0.4
 - [ICELLNET](https://github.com/soumelis-lab/ICELLNET) v0.99.3
 - [iTALK](https://github.com/Coolgenome/iTALK) v0.1.0
 - [NATMI](https://github.com/forrest-lab/NATMI/)
 - [NicheNet](https://github.com/saeyslab/nichenetr) v1.0.0
 - [scMLnet](https://github.com/SunXQlab/scMLnet) v0.1.0
 - [SingleCellSignalR](https://github.com/SCA-IRCM/SingleCellSignalR_v1) v1.4.0
+- [stLearn](https://github.com/BiomedicalMachineLearning/stLearn) v0.4.7
 
 ## Datasets included in this study
 - <b>Human pancreatic ductal adenocarcinoma (PDAC) dataset</b>
@@ -43,6 +48,15 @@ The running scripts of CCI tools and analysis codes used in this study are avail
 
 ## Evaluation pipeline
 Users can evaluate CCI tools using their own data following the workflow below.
+
+### Step 0: prepare directory and scripts
+before we strat, it's a good idea to prepare the directories for storing the results from different tools, we prepared a script for generating all the directories and running scripts for CCI tools inculded in our study. You can simply try it using the example code below, or you can skip this step and prepare directories on your own. 
+
+```
+python ./scripts/prepare_dir_script.py --sc_norm ./ST_A3_GSM4797918/data/processed/sc_norm.tsv --sc_count ./ST_A3_GSM4797918/data/processed/sc_counts.tsv --sc_meta ./ST_A3_GSM4797918/data/processed/sc_meta.tsv --deconv ./ST_A3_GSM4797918/data/STRIDE/STRIDE_spot_celltype_frac.txt --st_count ./ST_A3_GSM4797918/data/processed/st_counts.tsv --st_coord ./ST_A3_GSM4797918/data/processed/st_coord.tsv --st_meta ./ST_A3_GSM4797918/data/processed/st_meta.tsv --output_dir ./ST_A3_GSM4797918/tools
+
+```
+The running scripts generated here are just for exaples, you can modify them on your own. As for the examples of the generated running scripts, you can refer to `./example_data/ST_A3_GSM4797918/tools/{tool}/script/submit_{tool}.sh` for the script for each tool.
 
 ### Step 1: compute the d_rat and P-value for LR pairs using ST data
 Users need to provie a count file for ST data, a "coordinates" file recording the coordinates of each spot, and a "LR pair" file recording the ligand-receptor interactions. 
@@ -81,6 +95,95 @@ when having all these input files prepared, you can submit computing d_rat and P
 nohup python ./scripts/prepare_ip_dis_sinkhorn2.py -c st_count_file -p st_coord_file -o ./ip_dis_sinkhorn2 &
 ```
 Since this step will cost a lot of time, for a quick start, you can use the ip_dis file that we generated before. you can find it in the `./example_data/ST_A3_GSM4797918/data/ip_dis_sinkhorn2/ip_distance_all.tsv`, which computed the d_rat and P-value using the example ST data from sample ST_A3_GSM4797918.
+
+
+### Step 2: running CCI tools
+For this step, becasue of the dependency conflict, we cannot prepare a conda environment for you to run all the tools. So, I am sorry that, you need to prepare the running environment for each tool on your own. But you still can use the scripts generated in the step 0 as an example after having environments prepared. We provided the installation codes and Github links for CCI tools included in our study, you can go to their repositury for the detail.
+
+#### Installation codes
+- CellCall
+- - for more details, please refer to https://github.com/ShellyCoder/cellcall
+```
+devtools::install_github("ShellyCoder/cellcall")
+```
+
+- CellChat
+- - for more details, please refer to https://github.com/sqjin/CellChat
+```
+devtools::install_github("sqjin/CellChat")
+```
+
+- CellPhoneDB & CellPhoneDB v3
+- - for more details, please refer to https://github.com/ventolab/CellphoneDB
+```
+pip install cellphonedb
+```
+
+- Connectome
+- - for more details, please refer to https://github.com/msraredon/Connectome
+```
+devtools::install_github('msraredon/Connectome', ref = 'master')
+```
+
+- CytoTalk
+- - for more details, please refer to https://github.com/tanlabcode/CytoTalk
+```
+devtools::install_github("tanlabcode/CytoTalk")
+```
+
+- Domino
+- - for more details, please refer to https://github.com/Chris-Cherry/domino
+```
+devtools::install_github('Chris-Cherry/domino')
+```
+
+- Giotto
+- - for more details, please refer to https://github.com/RubD/Giotto
+```
+remotes::install_github("RubD/Giotto") 
+```
+
+- ICELLNET
+- - for more details, please refer to https://github.com/soumelis-lab/ICELLNET
+```
+devtools::install_github("soumelis-lab/ICELLNET",ref="master", subdir="icellnet")
+```
+
+- iTALK
+- - for more details, please refer to https://github.com/Coolgenome/iTALK
+```
+devtools::install_github("Coolgenome/iTALK", build_vignettes = TRUE)
+```
+
+- NATMI
+- - for more details, please refer to https://github.com/forrest-lab/NATMI/
+```
+git clone https://github.com/asrhou/NATMI.git
+```
+
+- NicheNet
+- - for more details, please refer to https://github.com/saeyslab/nichenetr
+```
+devtools::install_github("saeyslab/nichenetr")
+```
+
+- scMLnet
+- - for more details, please refer to https://github.com/SunXQlab/scMLnet
+```
+devtools::install_github("YUZIXD/scMLnet")
+```
+
+- SingleCellSignalR
+- - for more details, please refer to https://github.com/SCA-IRCM/SingleCellSignalR_v1
+```
+devtools::install_github(repo = "https://github.com/SCA-IRCM/SingleCellSignalR_v1", subdir = "SingleCellSignalR")    
+```
+
+- stLearn
+- - for more details, please refer to https://github.com/BiomedicalMachineLearning/stLearn
+```
+conda install -c conda-forge stlearn
+```
 
 
 
