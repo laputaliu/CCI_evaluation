@@ -102,55 +102,55 @@ For this step, becasue of the dependency conflict, we cannot prepare a conda env
 
 #### Installation codes
 - CellCall
-- - for more details, please refer to https://github.com/ShellyCoder/cellcall
+	- for more details, please refer to https://github.com/ShellyCoder/cellcall
 ```
 devtools::install_github("ShellyCoder/cellcall")
 ```
 
 - CellChat
-- - for more details, please refer to https://github.com/sqjin/CellChat
+	- for more details, please refer to https://github.com/sqjin/CellChat
 ```
 devtools::install_github("sqjin/CellChat")
 ```
 
 - CellPhoneDB & CellPhoneDB v3
-- - for more details, please refer to https://github.com/ventolab/CellphoneDB
+	- for more details, please refer to https://github.com/ventolab/CellphoneDB
 ```
 pip install cellphonedb
 ```
 
 - Connectome
-- - for more details, please refer to https://github.com/msraredon/Connectome
+	- for more details, please refer to https://github.com/msraredon/Connectome
 ```
 devtools::install_github('msraredon/Connectome', ref = 'master')
 ```
 
 - CytoTalk
-- - for more details, please refer to https://github.com/tanlabcode/CytoTalk
+	- for more details, please refer to https://github.com/tanlabcode/CytoTalk
 ```
 devtools::install_github("tanlabcode/CytoTalk")
 ```
 
 - Domino
-- - for more details, please refer to https://github.com/Chris-Cherry/domino
+	- for more details, please refer to https://github.com/Chris-Cherry/domino
 ```
 devtools::install_github('Chris-Cherry/domino')
 ```
 
 - Giotto
-- - for more details, please refer to https://github.com/RubD/Giotto
+	- for more details, please refer to https://github.com/RubD/Giotto
 ```
 remotes::install_github("RubD/Giotto") 
 ```
 
 - ICELLNET
-- - for more details, please refer to https://github.com/soumelis-lab/ICELLNET
+	- for more details, please refer to https://github.com/soumelis-lab/ICELLNET
 ```
 devtools::install_github("soumelis-lab/ICELLNET",ref="master", subdir="icellnet")
 ```
 
 - iTALK
-- - for more details, please refer to https://github.com/Coolgenome/iTALK
+	- for more details, please refer to https://github.com/Coolgenome/iTALK
 ```
 devtools::install_github("Coolgenome/iTALK", build_vignettes = TRUE)
 ```
@@ -168,26 +168,130 @@ devtools::install_github("saeyslab/nichenetr")
 ```
 
 - scMLnet
-- - for more details, please refer to https://github.com/SunXQlab/scMLnet
+	- for more details, please refer to https://github.com/SunXQlab/scMLnet
 ```
 devtools::install_github("YUZIXD/scMLnet")
 ```
 
 - SingleCellSignalR
-- - for more details, please refer to https://github.com/SCA-IRCM/SingleCellSignalR_v1
+	- for more details, please refer to https://github.com/SCA-IRCM/SingleCellSignalR_v1
 ```
 devtools::install_github(repo = "https://github.com/SCA-IRCM/SingleCellSignalR_v1", subdir = "SingleCellSignalR")    
 ```
 
 - stLearn
-- - for more details, please refer to https://github.com/BiomedicalMachineLearning/stLearn
+	- for more details, please refer to https://github.com/BiomedicalMachineLearning/stLearn
 ```
 conda install -c conda-forge stlearn
 ```
 
+After running these CCI tools, you can use the functions in the `./scripts/extract_tool_results.py` to extract predicted interactions from these CCI tools' output. You can find the example on how to extract tool results from our jupyter notebook file named `extract_results.ipynb` under the `./example_data/ST_A3_GSM4797918/` directory. The original output files of evaluated CCI tools of the sample A3 are also included under the `./example_data/ST_A3_GSM4797918/tools` directory. We stored the extracted tool results in a python dictionary object and dumped it in a pkl file using `pickle` package. You can find the structure of this dictionary in the `including new tools` section. You can find the tool result dictionary of our example dataset at `./example_data/ST_A3_GSM4797918/evaluation_result/pkl/tool_res_dic.pkl` and load it using the code below:
+```
+import pickle as pkl
 
+with open('./example_data/ST_A3_GSM4797918/evaluation_result/pkl/tool_res_dic.pkl', 'rb') as f:
+    tool_res_dic = pkl.load(f)
+```
 
+<br/>
 
+#### Including new tools
+If users want to including new CCI tools into our evaluation workflow, they only need to provide the results of the addtional tools. The same as what we did above, users can store new tools' results in a python dictionary object and packaged it into a pkl file using pickle. Then, users can provide the path to this result dictionary file to our script and follow the guide in the step 3 to evaluate their new tools. The structure example of the tool result dictionary and the example codes of saving python object using `pickle` are provided below.
+
+Example structure of the tool result dictionary:
+- the key is tool name, the value is another dictionary recording predicted interactions in each cell type pair with the key is cell type pair and the value is a list containing the predicted interactions.
+```
+tool_res_dic = {
+    'tool': {
+        'celltype_a|celltype_b': ['l1 - r1', 'l2 - r2', 'l3 - (r3_sub1+r3_sub2)'],
+        'celltype_a|celltype_c': ['l4 - r4', 'l5 - r5']
+    }
+}
+```
+
+Example codes of saving tool_res_dic using pickle:
+```
+import pickle as pkl
+
+with open('/your/saving/path/tool_res_dic.pkl', 'wb') as f:
+    pkl.dump(tool_res_dic, f)
+```
+
+<br/>
+
+### Step 3: calculating distance enrichment score (DES)
+After the 2 steps above, then we can finally start to evaluate these CCI tools. You can load the script `./script/extract_tool_reslults.py` for all the functions that we need in this step. And you can find an example on how to evaluate using these functions at `./example_data/ST_A3_GSM4797918/extract_results.ipynb`.
+
+#### Define near/far cell type pairs
+Before calculating the DES, we also need to define the near/far cell type pairs based on the average distance between cell types. For doing so, you need to provide an addtional "ST meta" file recording the cell type annotation of the ST data. The spatial cell type annotation can be done by [STRIDE](https://github.com/wanglabtongji/STRIDE). The "ST meta" file should be a tab-delimited text file, the spot barcodes in the first column, the cell types in the second columns.
+
+Example input ST meta file:
+```
+CTATCGGGTCTCAACA-1	Fibroblasts
+TCGAGACCAACACCGT-1	Fibroblasts
+GATGCGTCCTGCATTC-1	Fibroblasts
+GCATAGAGCACTCAGG-1	Neural
+GCAGATTAGGGATATC-1	Neural
+```
+
+Having the cell type annotation and the spot coordinates, than we can compute the distance between cell types and define the near/far cell type pairs using the functions `cal_ct_avg_dis()` and `generate_ct_distype()` in the script `extract_tool_results.py`. You can find the details about how to use the example codes below to define near/far cell type pairs in our examples `./example_data/ST_A3_GSM4797918/extract_results.ipynb`
+
+Example codes for defining near/far cell type pairs:
+```
+# compute the average distance between cell types, using the cell-type annotation and the spot coordinated 
+avg_dis_sr = extract_tool_results.cal_ct_avg_dis(meta_df, pos_df)
+
+# define cell type distance type based on the spatial distance 
+ct_distype_sr = extract_tool_results.generate_ct_distype(avg_dis_sr)
+```
+
+#### Calculating & plotting DES
+Through all steps above, we already have all the data that we need for calculating DES: the d_rat file generated in step 1, the tool result dictionary generated in step 2, the cell type pair type generated just now. Then, using the function `plot_es_workflow()` in the script `extract_tool_results.py`, we can compute the DES for each tool in this dataset and plot the DES rank. You can find the details about how to use the example codes below in our examples `./example_data/ST_A3_GSM4797918/extract_results.ipynb`.
+
+Example codes for calculating & plotting DES:
+```
+import pandas as pd
+
+import sys
+sys.path.append('./scripts/')
+import extract_tool_results
+
+project_base_dirs = [
+    './ST_A3_GSM4797918/'
+]
+
+tool_list = [
+    'cc', 'cpdb', 'scr', 'natmi', 'icellnet', 'italk',
+    'nichenet', 'scmlnet', 'connectome', 'cytotalk', 'cellcall',
+    'domino', 'stlearn', 'cpdb_v3', 'giotto', 'base_line'
+]
+
+for project_base_dir in project_base_dirs:    
+    
+    # reading the d_rat file generated in the step 1
+    d_rat_df = pd.read_csv('{}/data/ip_dis_sinkhorn2/ip_distance_all.tsv'.format(project_base_dir),
+                          sep='\t', index_col = 0)
+
+    # loading the tool_res_dic, and the near/far cell type pair information
+    with open('{}/evaluation_result/pkl/tool_res_dic.pkl'.format(project_base_dir), 'rb') as f:
+        tool_res_dic = pkl.load(f)
+    with open('{}/data/pkl/ct_distype_sr.pkl'.format(project_base_dir), 'rb') as f:
+        ct_distype_sr = pkl.load(f)
+    
+    # calculating & ploting DES
+    extract_tool_results.plot_es_workflow(
+        d_rat_df, # the d_rat dataframe
+        tool_res_dic, # the dictionary recording tool results
+        ct_distype_sr, # the pandas Series recording the cell type pair distance type
+        '{}/evaluation_result/figure'.format(project_base_dir), # the dir for saving figures
+        '{}/evaluation_result/pkl'.format(project_base_dir), # the dir for saving DES scores
+        fig_save_flag=True, # whether save the figure
+	pkl_save_flag=True, # whether save the DES score
+    )    
+```
+
+## Data simulation
+Still updaing. Coming soon! (^ ^)
 
 
 
