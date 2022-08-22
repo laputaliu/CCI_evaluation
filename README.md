@@ -47,7 +47,7 @@ Users can evaluate CCI tools using their own data following the workflow below.
 ### Step 1: compute the d_rat and P-value for LR pairs using ST data
 Users need to provie a count file for ST data, a "coordinates" file recording the coordinates of each spot, and a "LR pair" file recording the ligand-receptor interactions. 
 - The input "coordinates" file should be a tab-delimited text file with spot barcodes in the first column, the x coordinates of spot in the second column (named as row), and the y coordinated of the spot in the third column (named as col). 
-- The "LR pair" file is a LR database in the text format, it should be a tab-delimited text file recording the ligand, receptor and their interactions. You can simply used the "LR pair" file generated from the CellChatDB which is used in our study, you can find it at `./cci_database/cc_ip.tsv`. Or you can also use your customized LR database. There are 4 columns needed in the "LR pair", the first column should be the interaction name, you can connect partipated L,R genes with the `_`; next a column named "interaction_name_2" for interaction names in another format (`ligand - receptor` for single subunit, `ligand - (receptor1+receptor2+...)` for multi-subunits); and another two columns recording ligand and receptor gene symbols, for multi-subunit receptors, the subunits need to be seprated by `,`.
+- The "LR pair" file is a LR database in the text format, it should be a tab-delimited text file recording the ligand, receptor and their interactions. You can simply used the "LR pair" file generated from the CellChatDB which is used in our study, you can find it at `./cci_database/cc_ip_multi_split.tsv`. Or you can also use your customized LR database. There are 4 columns needed in the "LR pair", the first column should be the interaction name, you can connect partipated L,R genes with the `_`; next a column named "interaction_name_2" for interaction names in another format (`ligand - receptor` for single subunit, `ligand - (receptor1+receptor2+...)` for multi-subunits); and another two columns recording ligand and receptor gene symbols, for multi-subunit receptors, the subunits need to be seprated by `,`.
 
 <br/>
 
@@ -73,5 +73,18 @@ TGFB1_ACVR1B_TGFBR2	TGFb	Secreted Signaling	TGFB1 - (ACVR1B+TGFBR2)	TGFB1	ACVR1B
 GDF15_TGFBR2	GDF	Secreted Signaling	GDF15 - TGFBR2	GDF15	TGFBR2
 GDNF_GFRA1	GDNF	Secreted Signaling	GDNF - GFRA1	GDNF	GFRA1
 ```
+
+<br/>
+
+when having all these input files prepared, you can submit computing d_rat and P-value of each interaction by using the script we provided, the example command below:
+```
+nohup python ./scripts/prepare_ip_dis_sinkhorn2.py -c st_count_file -p st_coord_file -o ./ip_dis_sinkhorn2 &
+```
+Since this step will cost a lot of time, for a quick start, you can use the ip_dis file that we generated before. you can find it in the `./example_data/ST_A3_GSM4797918/data/ip_dis_sinkhorn2/ip_distance_all.tsv`, which computed the d_rat and P-value using the example ST data from sample ST_A3_GSM4797918.
+
+
+
+
+
 
 
