@@ -39,12 +39,17 @@ The running scripts of CCI tools and analysis codes used in this study are avail
 - `/scripts` folder contains all the scripts for running each CCI tool.
 - `extract_tool_results.py` this Python script is used to extract all the predicted interactions from each tool's outputs.
 
+<br/>
 
 ## Evaluation pipeline
 Users can evaluate CCI tools using their own data following the workflow below.
 
 ### Step 1: compute the d_rat and P-value for LR pairs using ST data
-Users need to provie a count file for ST data, a "coordinates" file recording the coordinates of each spot, and a "LR pair" file recording the ligand-receptor interactions. The input "coordinates" file should be a tab-delimited text file with spot barcodes in the first column, the x coordinates of spot in the second column (named as row), and the y coordinated of the spot in the third column (named as col). The "LR pair" file is a LR database in the text format, it should be a tab-delimited text file recording the ligand, receptor and their interactions. You can simply used the "LR pair" file generated from the CellChatDB which is used in our study, you can find it at `./cci_database/cc_ip.tsv`. Or you can also use your customized LR database. There are 4 columns needed in the "LR pair", the first column should be the interaction name, you can connect partipated L,R genes with the `_`; next a column named "interaction_name_2" for interaction names in another format (`ligand - receptor` for single subunit, `ligand - (receptor1+receptor2+...)` for multi-subunits); and another two columns recording ligand and receptor gene symbols, for multi-subunit receptors, the subunits need to be seprated by `,`.
+Users need to provie a count file for ST data, a "coordinates" file recording the coordinates of each spot, and a "LR pair" file recording the ligand-receptor interactions. 
+- The input "coordinates" file should be a tab-delimited text file with spot barcodes in the first column, the x coordinates of spot in the second column (named as row), and the y coordinated of the spot in the third column (named as col). 
+- The "LR pair" file is a LR database in the text format, it should be a tab-delimited text file recording the ligand, receptor and their interactions. You can simply used the "LR pair" file generated from the CellChatDB which is used in our study, you can find it at `./cci_database/cc_ip.tsv`. Or you can also use your customized LR database. There are 4 columns needed in the "LR pair", the first column should be the interaction name, you can connect partipated L,R genes with the `_`; next a column named "interaction_name_2" for interaction names in another format (`ligand - receptor` for single subunit, `ligand - (receptor1+receptor2+...)` for multi-subunits); and another two columns recording ligand and receptor gene symbols, for multi-subunit receptors, the subunits need to be seprated by `,`.
+
+<br/>
 
 Example input "coordinates" file:
 ```
@@ -55,6 +60,8 @@ GATGCGTCCTGCATTC-1	37	57
 GCATAGAGCACTCAGG-1	37	59
 GCAGATTAGGGATATC-1	37	61
 ```
+
+<br/>
 
 Example input "LR pair" file (CellChatDB):
 ```
