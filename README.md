@@ -58,6 +58,8 @@ python ./scripts/prepare_dir_script.py --sc_norm ./ST_A3_GSM4797918/data/process
 ```
 The running scripts generated here are just for exaples, you can modify them on your own. As for the examples of the generated running scripts, you can refer to `./example_data/ST_A3_GSM4797918/tools/{tool}/script/submit_{tool}.sh` for the script for each tool.
 
+<br/>
+
 ### Step 1: compute the d_rat and P-value for LR pairs using ST data
 Users need to provie a count file for ST data, a "coordinates" file recording the coordinates of each spot, and a "LR pair" file recording the ligand-receptor interactions. 
 - The input "coordinates" file should be a tab-delimited text file with spot barcodes in the first column, the x coordinates of spot in the second column (named as row), and the y coordinated of the spot in the third column (named as col). 
