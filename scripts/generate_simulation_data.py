@@ -29,9 +29,9 @@ usage+='''<Required>[Options]
 # set default #
 ###############
 
-cc_ip = '/fs/home/liuzhaoyang/data/cc_ip/cc_ip_all_multi_split.tsv'
-rec_tf = '/fs/home/liuzhaoyang/biosoft/cellcall-master/inst/extdata/new_ligand_receptor_TFs.txt'
-tf_target = '/fs/home/liuzhaoyang/biosoft/cellcall-master/inst/extdata/tf_target.txt'
+cc_ip = './cci_database/cc_ip_all_multi_split.tsv'
+rec_tf = './data_simulation/extdata/new_ligand_receptor_TFs.txt'
+tf_target = './data_simulation/extdata/tf_target.txt'
 
 simulate_output_dir = './'
 
