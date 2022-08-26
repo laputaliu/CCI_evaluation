@@ -40,9 +40,13 @@ First, generate known ligand-receptor pairs from CellChatDB, then select short-r
 ## Repository
 
 The running scripts of CCI tools and analysis codes used in this study are available in this GitHub repository.
-- `prepare_dir_script.py` this Python script is used to prepare the working directories and generate script submitting commands for every CCI tool.
 - `/scripts` folder contains all the scripts for running each CCI tool.
-- `extract_tool_results.py` this Python script is used to extract all the predicted interactions from each tool's outputs.
+- `./scripts/prepare_dir_script.py` this Python script is used to prepare the working directories and generate script submitting commands for every CCI tool.
+- `./scripts/extract_tool_results.py` this Python script is used to extract all the predicted interactions from each tool's outputs.
+
+- For running the example data of sample A3 in the human intestine dataset, please refer to the `./extract_result.ipynb`. It contains all the steps in our workflow.
+- All the tool results and the DES in all the real and simulated datasets are stored under `./evaluation_result`.
+
 
 <br/>
 
