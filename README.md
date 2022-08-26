@@ -301,12 +301,16 @@ For simulated datasets, you can follow the similar workflow above to prepare inp
 
 <br/>
 
-Step 1&2: Simulation of scRNA-seq, ST data, and LR pairs
+**Step 1&2: Simulation of scRNA-seq, ST data, and LR pairs**
+
 In each simulation round, 4 cell types in ST data are selected and are assigned with the near/far cell-type pair defined in the original ST data (Fig. S3a, using sample A4 as an example). For each cell type, we randomly selected cells from the same cell type in the original scRNA-seq data, and the number of selected cells is based on the number of spots to ensure each spot has approximately 2~5 cells after mapping scRNA-seq cells to ST. Next, the randomly selected cells will be randomly mapped to each spot according to their cell types and replace the spot’s original expression. To keep the real spatial cell-type structure in ST data, we did not change the original coordinates of selected spots. Then for each near/far cell-type pair, 30 interactions are randomly selected, and a semi-synthetic method is applied to scRNA-seq data to replace original expression signals of selected ligand and receptor genes with overexpression signals. 
 - You can use the example codes below to generate scRNA-seq and ST data with overexpressed LR pairs.
 
 ```
-nohup python ./scripts/generate_simulation_data.py --sc_count sc_count_path --sc_meta sc_meta_path --st_coord st_coord_path --st_meta st_meta_path --target_ct target_ct_file --output_dir output_dir --nip_per_ctp 30 > nohup.out 2>&1 &
+nohup python ./scripts/generate_simulation_data.py --sc_count sc_count_path --sc_meta sc_meta_path \
+--st_coord st_coord_path --st_meta st_meta_path \
+--target_ct target_ct_file --output_dir output_dir \
+--nip_per_ctp 30 > nohup.out 2>&1 &
 
 # --sc_count: sc count matrix path
 # --sc_meta: sc meta path
@@ -331,7 +335,8 @@ In this step, we can generate simulated scRNA-seq and ST data with known overexp
 
 <br/>
 
-Step 3: Filtering simulated interactions to keep short/long-range interaction consistent with the spatial distance of cell type pairs
+**Step 3: Filtering simulated interactions to keep short/long-range interaction consistent with the spatial distance of cell type pairs**
+
 Having simulated ST data, short/long-range interactions can be defined following the same procedure used in the real data. Finally, both simulated scRNA-seq and ST data will be re-modified, only overexpression signals of short-range interactions will be kept in the near cell-type pairs, and the same for long-range interactions in the far cell-type pairs. After filtering, around 10 simulated interactions will be kept in each cell-type pair (Fig. S3b, using sample A4 as an example). For the kept simulated interactions, if available, corresponding transcription factors and target genes will also be selected and overexpressed so that the tools based on the transcription factors and targets could be also used.
 - You can use the codes below to filter short/long-range interactions and generate the final scRNA-seq and ST dataset with known overexpressed LR pairs.
 
@@ -341,7 +346,10 @@ nohup python ./scripts/prepare_ip_dis_sinkhorn2.py -c sc_count_path -p st_coord_
 
 # then, based on the simulated data generated in the step 1&2, and d_rat, 
 # we can filter overexpressed LR pairs and generate the final dataset
-nohup python ./scripts/generate_simulation_data_pa.py --sc_origin_count sc_original_count_path --sc_origin_meta sc_original_meta_path --st_coord st_coord_path --sc_round1_count_path sc_round1_count_path --sc_round1_meta_path sc_round1_meta_path --target_ct_distype_path target_ct_distype_path --target_ctp_ip_tf_path target_ctp_ip_tf_path --d_rat_path d_rat_path --simu_spot_cell_dic_path simu_spot_cell_dic_path > nohup_round2.out 2>&1 &
+nohup python ./scripts/generate_simulation_data_pa.py --sc_origin_count sc_original_count_path --sc_origin_meta sc_original_meta_path \
+--st_coord st_coord_path --sc_round1_count_path sc_round1_count_path --sc_round1_meta_path sc_round1_meta_path \
+--target_ct_distype_path target_ct_distype_path --target_ctp_ip_tf_path target_ctp_ip_tf_path \
+--d_rat_path d_rat_path --simu_spot_cell_dic_path simu_spot_cell_dic_path > nohup_round2.out 2>&1 &
 
 # --sc_origin_count: the original sc count matrix path (before simulation) 
 # --sc_origin_meta: the original sc meta path (before simulation)
